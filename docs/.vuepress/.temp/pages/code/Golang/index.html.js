@@ -1,0 +1,1 @@
+export const data = JSON.parse("{\"key\":\"v-1a08fb50\",\"path\":\"/code/Golang/\",\"title\":\"hello Golang\",\"lang\":\"zh-CN\",\"frontmatter\":{},\"headers\":[],\"git\":{\"updatedTime\":null,\"contributors\":[]},\"filePathRelative\":\"code/Golang/README.md\"}")
