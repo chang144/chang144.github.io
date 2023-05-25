@@ -25,6 +25,7 @@ export default defineUserConfig({
                     {text: "Go", link: "/code/Golang"},
                     {text: "Docker", link: "/code/Docker"},
                 ],
+                link: "/code/"
             },
         ],
         // 可折叠的侧边栏
