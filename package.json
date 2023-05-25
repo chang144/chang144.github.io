@@ -20,5 +20,8 @@
   "homepage": "https://github.com/chang144/chang144.github.io#readme",
   "devDependencies": {
     "vuepress": "2.0.0-beta.62"
+  },
+  "dependencies": {
+    "@rollup/plugin-alias": "^5.0.0"
   }
 }
