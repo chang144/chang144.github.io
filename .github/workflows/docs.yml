@@ -21,11 +21,10 @@ jobs:
 #          version: 7
 #          run_install: true
 #
-#      - name: Install Node.js
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: 18
-#          cache: pnpm
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 #
 #        # 运行构建脚本
 #      - name: Build VuePress site
