@@ -8,22 +8,26 @@ export default defineUserConfig({
     theme: defaultTheme({
         home: '/',
         repo: 'chang144/chang144.github.io',
+        repoLabel: '',
         lastUpdated: true,
-        // docs
-        docsRepo: 'https://github.com/chang144/chang144.github.io',
-        docsBranch: 'main',
-        // docsDir: 'docs',
-        // editLinkPattern: ':repo/-/edit/:branch/:path',
+
         // 默认主题配置
         navbar: [
             { text: '首页', link: '/',},
-            { text: '导航', link: '/guide',},
-            { text: '随记', link: '/write',},
+            { text: '导航', link: '/guide/',},
+            {   text: '计算机基础',
+                children: [
+                    {text: '计网', link: "/basic/http/"},
+                    {text: '数据库', link: "/basic/db/"},
+                    {text: '操作系统', link: "/basic/linux/"},
+                ],
+                link: '/basic/',
+            },
 
             {
                 text: "code", children: [
-                    {text: "Go", link: "/code/Golang"},
-                    {text: "Docker", link: "/code/Docker"},
+                    {text: "Go", link: "/code/Golang/"},
+                    {text: "Docker", link: "/code/Docker/"},
                 ],
                 link: "/code/"
             },
@@ -33,7 +37,7 @@ export default defineUserConfig({
             '/guide/': [
                 {
                     text: 'Guide',
-                    children: ['/guide/README.md', '/guide/getting-started.md'],
+                    link: '/guide/',
                 },
             ],
             '/code/': [
@@ -51,8 +55,14 @@ export default defineUserConfig({
                         '/code/Docker/go docker部署.md'
                     ],
                 },
+
             ],
         },
+        // docs
+        docsRepo: 'https://github.com/chang144/chang144.github.io',
+        docsBranch: 'main',
+        docsDir: 'docs',
+        editLinkPattern: ':repo/edit/:branch/:path',
     }),
 })
 
