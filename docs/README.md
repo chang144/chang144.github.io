@@ -1,3 +1,9 @@
+---
+home: true
+#heroImage: ./static/hanser.jpg
+heroImage: https://vuejs.org/images/logo.png
+
+---
 # 这里是首页
 
 下面是目前已有的资料：
