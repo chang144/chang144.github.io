@@ -1,1 +1,0 @@
-const t=JSON.parse('{"key":"v-794c2226","path":"/basic/http/","title":"计算机网络","lang":"zh-CN","frontmatter":{},"headers":[],"git":{"updatedTime":1685203734000,"contributors":[{"name":"chenhang","email":"1340938223@qq.com","commits":1}]},"filePathRelative":"basic/http/README.md"}');export{t as data};

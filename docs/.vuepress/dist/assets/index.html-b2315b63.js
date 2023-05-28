@@ -1,0 +1,1 @@
+const t=JSON.parse('{"key":"v-d623d08a","path":"/basic/network/","title":"计算机网络","lang":"zh-CN","frontmatter":{},"headers":[],"git":{"updatedTime":null,"contributors":[]},"filePathRelative":"basic/network/README.md"}');export{t as data};

@@ -20,7 +20,10 @@ export default defineUserConfig({
                     {
                         text: '计网',
                         children: [
-                            { text: 'http', link: '/basic/http/'}
+                            { text: '基础篇', link: '/basic/network/01-basic'},
+                            { text: 'HTTP', link: '/basic/network/02-http'},
+                            { text: 'TCP', link: '/basic/network/03-tcp'},
+                            { text: 'IP', link: '/basic/network/04-ip'},
                         ],
                     },
                     {
@@ -29,7 +32,7 @@ export default defineUserConfig({
                             { text: 'mysql', link: '/basic/db/mysql',},
                             { text: 'redis', link: '/basic/db/redis',}
                         ],
-                        // link: "/basic/db/"
+
                     },
                     {
                         text: '操作系统',
@@ -50,15 +53,14 @@ export default defineUserConfig({
             {
                 text: "后端",
                 children: [
-                    {text: "Go", link: "/code/Golang/"},
-                    {text: "Docker", link: "/code/Docker/"},
+                    {text: "Go", link: "/backend/Golang/"},
                 ],
             },
             {
                 text: '部署',
                 children: [
-                    {text: 'docker', link: '/'},
-                    {text: 'k8s', link: '/'},
+                    {text: 'docker', link: '/deploy/docker/'},
+                    {text: 'k8s', link: '/deploy/k8s/'},
                 ]
             }
         ],
@@ -70,23 +72,57 @@ export default defineUserConfig({
                     link: '/guide/',
                 },
             ],
-            '/code/': [
+            '/basic/network/': [
+                {
+                    text: '计算机网络',
+                    children: [
+                        {
+                            text: '计算机网络 - 基础篇',
+                            children: [
+                                '/basic/network/01-basic/01-TCP&IP网络模型有几层.md',
+                                '/basic/network/01-basic/02-键入网址到网页显示，期间发送了什么.md',
+                            ],
+                            link: '/basic/network/01-basic'
+                        },
+                        {
+                            text: '计算机网络 - http篇',
+                            children: [],
+                            link: '/basic/network/02-http'
+                        },
+                        {
+                            text: '计算机网络 - tcp篇',
+                            children: [],
+                            link: '/basic/network/03-tcp'
+                        },
+                        {
+                            text: '计算机网络 - ip篇',
+                            children: [],
+                            link: '/basic/network/04-ip'
+                        },
+                    ]
+                }
+            ],
+            '/backend/': [
                 {
                     text: 'Golang',
                     collapsible: true,
-                    children: ['/code/Golang/go cli.md', '/code/Golang/Go Project Layout.md'],
-                },
-                {
-                    text: 'Docker',
-                    collapsible: true,
                     children: [
-                        '/code/Docker/docker.md',
-                        '/code/Docker/Dive into Dockerfile.md',
-                        '/code/Docker/go docker部署.md'
+                        '/backend/Golang/go cli.md',
+                        '/backend/Golang/Go Project Layout.md'
                     ],
                 },
-
             ],
+            '/deploy/': [
+                {
+                    text: 'docker',
+                    collapsible: true,
+                    children: [
+                        '/deploy/docker/docker.md',
+                        '/deploy/docker/Dive into Dockerfile.md',
+                        '/deploy/docker/go docker部署 .md',
+                    ]
+                }
+            ]
         },
         // edit
         editLink: false,
