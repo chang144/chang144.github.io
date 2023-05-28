@@ -125,9 +125,9 @@ export default defineUserConfig({
             ]
         },
         // edit
-        editLink: false,
+        editLink: true,
         docsRepo: 'https://github.com/chang144/chang144.github.io',
-        docsBranch: 'main',
+        docsBranch: 'edit',
         docsDir: 'docs',
         editLinkPattern: ':repo/edit/:branch/:path',
     }),
