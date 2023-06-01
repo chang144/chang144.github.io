@@ -29,8 +29,8 @@ export default defineUserConfig({
                     {
                         text: '数据库',
                         children: [
-                            { text: 'mysql', link: '/basic/db/mysql',},
-                            { text: 'redis', link: '/basic/db/redis',}
+                            { text: 'mysql', link: '/basic/db/mysql/',},
+                            { text: 'redis', link: '/basic/db/redis/',}
                         ],
 
                     },
@@ -100,6 +100,28 @@ export default defineUserConfig({
                             link: '/basic/network/04-ip'
                         },
                     ]
+                }
+            ],
+            '/basic/db/': [
+                {
+                    text: 'MySQL',
+                    children: [
+                        {
+                            text: '0001 - 基础',
+                            children: [
+                                '/basic/db/mysql/0001-基础/执行select语句，期间发生了什么.md',
+                            ],
+                            // link: '/basic/db/mysql/'
+                        }
+                    ],
+                    link: '/basic/db/mysql/'
+                },
+                {
+                    text: 'Redis',
+                    children: [
+
+                    ],
+                    link: '/basic/db/redis/'
                 }
             ],
             '/backend/': [

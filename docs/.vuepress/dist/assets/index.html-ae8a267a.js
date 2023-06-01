@@ -1,0 +1,1 @@
+import{_ as o,o as c,c as t,a as e,b as a}from"./app-8273266b.js";const r={},n=e("h1",{id:"hello-docker",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#hello-docker","aria-hidden":"true"},"#"),a(" hello Docker")],-1),s=[n];function d(l,_){return c(),t("div",null,s)}const i=o(r,[["render",d],["__file","index.html.vue"]]);export{i as default};
