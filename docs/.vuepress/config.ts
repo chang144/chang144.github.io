@@ -62,7 +62,13 @@ export default defineUserConfig({
                     {text: 'docker', link: '/deploy/docker/'},
                     {text: 'k8s', link: '/deploy/k8s/'},
                 ]
-            }
+            },
+            {
+              text: '八股',
+              children: [
+                  {text: 'golang', link: '/eight/golang/'}
+              ]
+            },
         ],
         // 可折叠的侧边栏
         sidebar: {
@@ -143,6 +149,13 @@ export default defineUserConfig({
                         '/deploy/docker/Dive into Dockerfile.md',
                         '/deploy/docker/go docker部署 .md',
                     ]
+                }
+            ],
+            '/eight/golang/': [
+                {
+                    text: 'golang',
+                    collapsible: false,
+                    link: "/eight/golang/README.md",
                 }
             ]
         },

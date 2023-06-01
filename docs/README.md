@@ -1,6 +1,6 @@
 ---
 home: true
-#heroImage: ./static/hanser.jpg
+#heroImage: ./public/hanser.jpg
 heroImage: https://vuejs.org/images/logo.png
 
 ---

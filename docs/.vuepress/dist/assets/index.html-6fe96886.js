@@ -1,1 +1,0 @@
-const t=JSON.parse('{"key":"v-0954a840","path":"/eight/golang/","title":"","lang":"zh-CN","frontmatter":{},"headers":[],"git":{"updatedTime":null,"contributors":[]},"filePathRelative":"eight/golang/README.md"}');export{t as data};
