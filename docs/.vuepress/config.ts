@@ -135,6 +135,7 @@ export default defineUserConfig({
                     text: 'Golang',
                     collapsible: true,
                     children: [
+                        '/backend/Golang/001-go命令行操作.md',
                         '/backend/Golang/go cli.md',
                         '/backend/Golang/Go Project Layout.md'
                     ],
