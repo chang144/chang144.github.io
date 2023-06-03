@@ -1,10 +1,8 @@
-# Go Project Layout
+# xxx - Go Project Layout
 
 > 参考链接[project-layout/README_zh.md at master · golang-standards/project-layout (github.com)](https://github.com/golang-standards/project-layout/blob/master/README_zh.md)
 
 ## Go 目录
-
-___
 
 + **/cmd**
 

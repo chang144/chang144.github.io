@@ -4,9 +4,16 @@ export default defineUserConfig({
     lang: 'zh-CN',
     title: '"hello"',
     description: '这是我的第一个 VuePress 站点',
+    head:[
+      [
+          'link', {rel:'icon', href:'/images/zfj.png'}
+      ]
+    ],
 
     theme: defaultTheme({
         home: '/',
+        logo: '/images/zfj.png',
+        logoDark: '/images/zfjd.png',
         repo: 'chang144/chang144.github.io',
         repoLabel: '',
         lastUpdated: true,
@@ -136,8 +143,11 @@ export default defineUserConfig({
                     collapsible: true,
                     children: [
                         '/backend/Golang/001-go命令行操作.md',
-                        '/backend/Golang/go cli.md',
-                        '/backend/Golang/Go Project Layout.md'
+                        '/backend/Golang/001-01-go cli.md',
+                        '/backend/Golang/Go Project Layout.md',
+                        '/backend/Golang/xxx-标准库.md',
+                        '/backend/Golang/xxx-GraceGoProject.md',
+                        '/backend/Golang/xxx-IAM Authz.md',
                     ],
                 },
             ],
@@ -148,7 +158,7 @@ export default defineUserConfig({
                     children: [
                         '/deploy/docker/docker.md',
                         '/deploy/docker/Dive into Dockerfile.md',
-                        '/deploy/docker/go docker部署 .md',
+                        '/deploy/docker/go docker部署.md',
                     ]
                 }
             ],

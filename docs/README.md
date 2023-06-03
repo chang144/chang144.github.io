@@ -1,8 +1,8 @@
 ---
 home: true
-#heroImage: ./public/hanser.jpg
+#heroImage: /images/zfc.png
 heroImage: https://vuejs.org/images/logo.png
-
+  
 ---
 # 这里是首页
 
