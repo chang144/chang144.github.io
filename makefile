@@ -1,4 +1,4 @@
-.PHONY: clean
+.PHONY: deploy
 deploy:
        npm run docs:build \
        git add .\
