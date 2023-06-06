@@ -3,7 +3,7 @@ import {defaultTheme, defineUserConfig} from 'vuepress'
 export default defineUserConfig({
     lang: 'zh-CN',
     title: '"hello"',
-    description: '这是我的第一个个人博客站点',
+    description: '这是我的第一个博客站点',
     head:[
       [
           'link', {rel:'icon', href:'/images/zfj.png'}

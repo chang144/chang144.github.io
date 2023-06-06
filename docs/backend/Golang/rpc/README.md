@@ -88,13 +88,14 @@ message Foo {
 > 注意：不能在一个`reserved`声明中混合字段名和标签
 
 `.proto`文件的编译结果
+
 + Go: 生成一个.pb.go文件，每个消息类型对应一个结构体
 
 各种语言的更多的使用方法请参考官方API文档
 
 基本数据类型对比：
 
-## 基本数据类型
+### 基本数据类型
 
 | .proto   | Go      |
 | :------- | :------ |
@@ -245,7 +246,8 @@ service SearchService {
 
 > 完整的可用选项可以查看google/protobuf/descriptor.proto.
 
-#### 基本规范
+### 基本规范
+
 + 描述文件以`.proto`作为文件后缀
 + Message命名采用驼峰命名的方式，字段命名采用小写加`_`分隔方式
 ```protobuf
@@ -264,11 +266,258 @@ enum Foo {
 ```
 + Service名称与RPC方法名统一采用驼峰式命名
 
-#### 编译
+### 编译
 
 参考Github项目google/protobuf安装编译器
 
 ```cmd
-protoc --proto_path=IMPORT_PATH --cpp_out=DST_DIR --java_out=DST_DIR --python_out=DST_DIR --go_out=DST_DIR --ruby_out=DST_DIR --javanano_out=DST_DIR --objc_out=DST_DIR --csharp_out=DST_DIR path/to/file.proto
+protoc --proto_path=IMPORT_PATH  --go_out=plugin=grpc:DST_DIR path/to/file.proto 
 ```
-> 有关编译细节，将在后续补充详细 to be continued
+
+在使用上述命令时，笔者遇到了下面的error
+
+```
+--go_out: protoc-gen-go: plugins are not supported; use 'protoc --go-grpc_out=...' to generate gRPC
+```
+
+出现的原因是缺少`protoc-gen-go`插件，官方也提供了文档地址可以查看
+
+>  See https://grpc.io/docs/languages/go/quickstart/#regenerate-grpc-code for more information.
+
+使用下面的命令进行安装
+
+```
+go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
+```
+
+
+> 有关编译细节，将在后续补充详细
+
+## 定制代码生成插件
+
+Protobuf的编译器是通过插件机制实现对不同语言的支持，
+
+用户可以通过`--go_out=plugins=grpc`参数，**但是新版本的protoc似乎会报错**，提示`use 'protoc --go-grpc_out=...' to generate gRPC`，解决方法是使用参数`--go-grpc_out`同时查看文档https://grpc.io/docs/languages/go/quickstart/#regenerate-grpc-code
+
+参考gRPC的插件，发现`generator.RegisterPlugin()`函数可以用来注册插件，插件是一个`generator.Plugin`接口
+
+让定制的代码生成插件实现`Plugin`接口
+
+```go
+package plugin
+
+import "github.com/golang/protobuf/protoc-gen-go/generator"
+
+type netRpcPlugin struct {
+	*generator.Generator
+}
+
+func (n *netRpcPlugin) Name() string {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (n *netRpcPlugin) Init(g *generator.Generator) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (n *netRpcPlugin) Generate(file *generator.FileDescriptor) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (n *netRpcPlugin) GenerateImports(file *generator.FileDescriptor) {
+	//TODO implement me
+	panic("implement me")
+}
+
+var _ generator.Plugin = (*netRpcPlugin)(nil)
+
+```
+
+自定义`genImportCode`和`genServiceCode`生成每个服务的代码，例子
+
+```
+func (n *netRpcPlugin) genServiceCode(svc *descriptorpb.ServiceDescriptorProto) {
+	n.P("// TODO: service code , Name = " + svc.GetName())
+}
+
+func (n *netRpcPlugin) genImportCode(file *generator.FileDescriptor) {
+	n.P("// TODO: import code")
+}
+```
+
+注意这里，我们还需要重新克隆`protoc-gen-go`对应的`main()`函数，到这里定制插件基本完成，为了避免对`protoc-gen-go`插件造成干扰，我们将可执行程序命名为`protoc-gen-go-netrpc`，然后用下面的命令重新编译
+
+```bash
+protoc --go-netrpc_out=plugins=netrpc:. xxx.proto
+//
+protoc --go-netrpc-grpc_out=. --go_out=. xxx.proto
+
+```
+
+ 至此，定制的Protobuf代码生成插件可以工作了。
+
+> 关于上面的细节将在后续补充
+
+## gRPC入门
+
+首先写一个简单的`.proto`文件，定义HelloService接口
+
+> 这里简单提下，由于protoc版本不同，对`--go_out=plugins=grpc`参数以及不在支持，使用`--go-grpc_out`参数代替
+
+```protobuf
+syntax = "proto3";
+package gen;
+option go_package="./gen";
+
+message World {
+	string value = 1;
+}
+
+service HelloService {
+	rpc Hello (World) returns (World);
+}
+```
+
+使用命令进行编译
+
+```
+protoc --go-grpc_out=. --go_out=. .\proto\hello.proto
+```
+
+生成之后可以看到会有两个文件`hello.pd.go`以及`hello_grpc.pd.go`
+
+```
+//此时文件结构
+├─proto
+	├─hello.pd.go
+	└─hello_grpc.pd.go
+└─server
+	├─server.go
+```
+
+在`hello_grpc.pd.go`中，有两个接口
+
+```
+type HelloServiceClient interface {
+	Hello(ctx context.Context, in *World, opts ...grpc.CallOption) (*World, error)
+}
+
+type HelloServiceServer interface {
+	Hello(context.Context, *World) (*World, error)
+	mustEmbedUnimplementedHelloServiceServer()
+}
+```
+
+这两个接口分别是我们的client端和server端的接口
+
+先看server端：我们定义下面的结构体
+
+```go
+type HelloServiceImpl struct {
+	gen.UnimplementedHelloServiceServer // 新版本的gprc必须带上
+}
+```
+
+实现`HelloServiceServer`接口
+
+```go
+func (h *HelloServiceImpl) Hello(ctx context.Context, world *gen.World) (*gen.World, error) {
+	w := &gen.World{Value: "Hello :: " + world.GetValue() + " " + time.Now().String()}
+	return w, nil
+}
+
+func (h *HelloServiceImpl) mustEmbedUnimplementedHelloServiceServer() {
+	// TODO : do something
+}
+```
+
+使用下面的代码启动server端：
+
+```go
+func main() {
+	server := grpc.NewServer()
+	gen.RegisterHelloServiceServer(server, new(HelloServiceImpl))
+
+	listen, err := net.Listen("tcp", ":1234")
+	if err != nil {
+		return
+	}
+	err = server.Serve(listen)
+	if err != nil {
+		return
+	}
+}
+```
+
+接下来是client的代码：
+
+```go
+func main() {
+	conn, err := grpc.Dial("localhost:1234", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return
+	}
+	defer conn.Close()
+
+	client := gen.NewHelloServiceClient(conn)
+	reply, err := client.Hello(context.Background(), &gen.World{Value: "client"})
+	if err != nil {
+		return
+	}
+	fmt.Println(reply.GetValue())
+}
+```
+
+启动两个项目，就可以看到结果了
+
+## gRPC流
+
+gRPC框架针对服务端和客户端分别提供了流特性；使用关键字`stream`指定启用流特性
+
+在上面的`HelloService`增加一个双向流的`Channel()`方法
+
+```
+service HelloService {
+	rpc Hello (World) returns (World);
+	rpc Channel (stream World) returns (stream World);
+}
+```
+
+重新生成代码后，可以看到接口增加了`Channel()`方法的定义
+
+```go
+// client
+type HelloServiceClient interface {
+	Hello(ctx context.Context, in *World, opts ...grpc.CallOption) (*World, error)
+	Channel(ctx context.Context, opts ...grpc.CallOption) (HelloService_ChannelClient, error)
+}
+type HelloService_ChannelClient interface {
+	Send(*World) error
+	Recv() (*World, error)
+	grpc.ClientStream
+}
+// server
+type HelloServiceServer interface {
+	Hello(context.Context, *World) (*World, error)
+	Channel(HelloService_ChannelServer) error
+	mustEmbedUnimplementedHelloServiceServer()
+}
+type HelloService_ChannelServer interface {
+	Send(*World) error
+	Recv() (*World, error)
+	grpc.ServerStream
+}
+```
+
+可以看到，相比之前生成的接口，还有两个新的实现了双向通信的接口`HelloService_ChannelClient`和`HelloService_ChannelServer`，这些接口均定义了`Send()`和`Recv()`，用于流数据的双向通信
+
+### 发布和订阅模式
+
+缺省
+
+## gRPC进阶
+
