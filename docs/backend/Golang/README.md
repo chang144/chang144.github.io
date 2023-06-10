@@ -1,5 +1,14 @@
 # hello  Golang
 
+## Other Guide
++ [01-go命令行操作](./001-go命令行操作.md)
+  + [01-01-go命令行程序设计原则](./001-01-go%20cli.md)
++ [02-goProjectLayout](Go%20Project%20Layout.md) 
++ [03-go标准库](xxx-标准库.md)
++ [04-优雅的Go项目](xxx-GraceGoProject.md)
++ [05-IAM 认证](xxx-IAM%20Authz.md)
++ [06-gRPC](./rpc/README.md)
+
 ## 程序结构
 
 ### 1.1 命名
@@ -52,3 +61,313 @@ Go程序中有多个以`.go`源文件，每个源文件中以包的声明语句�
 var <valueName> type = 表达式
 ```
 
+## 复合数据类型
+
+### 4.2Slice
+
+Slice(切片)代表变长的序列，序列中每个元素都有相同的类型。slice的语法和数值很像，只是没有固定长度
+
+一个slice是一个轻量级的数据类型，提供了访问数组子序列元素的功能，而且slice的底层确实是一个**数组对象**。
+
+```go
+type Slice struct {
+    array unsafa.Pointer
+    len int
+    cap int
+}
+```
+
+
+
+## 函数
+
+### 5.8Deffered函数
+
+只要在调用的普通函数或方法前加上关键字`defer`，就完成了defer所需的语法
+
+`defer`语句经常被用于处理成对的操作，如打开、关闭、连接、断开连接、加锁、释放锁
+
+### 5.9Panic异常
+
+Go的类型系统会在编译时捕获很多错误，但有些错误只能在运行时检查，如数组访问越界、空指针引用等。这些运行时错误会引起painc异常。
+
+当panic异常发生时，程序会中断运行，并立即执行在该goroutine中被延迟的函数（defer机制）
+
+由于panic会引起程序的崩溃，因此panic一般用于严重错误
+
+### 5.10Recover捕获异常
+
+在defer函数中调用了内置函数**recover**，并且定义该defer语句的函数发生了panic异常，recover会使程序从panic中恢复，并返回panic value
+
+```go
+func Parse(input string) (s *Syntax, err error) {
+    defer func() {
+        if p := recover(); p != nil {
+            err = fmt.Errorf("internal error: %v", p)
+        }
+    }()
+    // ...parser...
+}
+```
+
+
+
+## Goroutine和Channels
+
+###  8.4Channels
+
+使用内置的`make`函数，可以创建一个channel：
+
+```go
+ch := make(chan int)
+```
+
+与`map`类似，channel对应一个make创建的底层数据结构的引用
+
+channel的两个操作：发送和接收
+
+```go
+ch <- x
+x = <- ch
+<-ch
+```
+
+channel还支持`close`操作，用于关闭channel，后续对该channel进行任何发送操作`close(ch)`
+
+创建带缓存的channel
+
+```go
+ch = make(chan int) // unbuffered channel
+ch = make(chan int, 0) // unbuffered channel
+ch = make(chan int, 10) // buffered channel with capacity 10
+```
+
+#### 8.4.1 不带缓存的channels
+
+ 一个基于**无缓存**的Channel的发送操作会导致发生在goroutine阻塞，直到另一个goroutine在同一个Channels上执行接收操作。反之。
+
+无缓存的Channels的发送和接收操作将导致两个goroutine进行一次同步操作。因此，无缓存Channels也称为同步Channels。
+
+> 这里插播一个在go语言中**空结构体**的妙用：
+>
+> 空结构体，匿名空结构体：
+>
+> ````
+> var e struct{}
+> ````
+>
+> 或者命名空结构体：
+>
+> ```go
+> type EmptyStruct struct {}
+> var e EmptyStruct
+> ```
+>
+> 它有一下特点：
+>
+> + 零内存占用：空结构体不占用任何内存空间
+> + 地址相同：空结构体所指向的地址都相同
+> + 无状态：不包含任何字段，所以它没有状态
+>
+> 使用场景：
+>
+> + 实现`set`集合类型
+> + 同于通道信号
+> + 作为方法接收器
+
+#### 8.4.2串联的Channels（Pipeline）
+
+Channels也可以用于将多个goroutine连接在一起，一个Channel的输出作为下一个Channel的输入
+
+这种串联的Channels就是所谓的管道（pipeline）
+
+#### 8.4.3单方向的Channel
+
+Go语言的类型系统提供了单方向的channel类型
+
++ `chan <- int`表示一个**只发送**`int`的channel
++ `<- chan int`表示一个**只接收**`int`的channel
+
+channels的关闭操作只用于断言不再向channel发送新的数据，所以在发送者所在的goroutine才能调用`close`函数关闭channel，负责接收者的channel调用`close`将回收一个编译错误
+
+#### 8.4.4 带缓存的Channels
+
+带缓存的channel内部持有一个元素队列。队列的最大容量有`make`函数的第二个参数决定
+
+```go
+ch = make(chan int, 10)
+```
+
+向缓存Channel的发送操作就是向内部缓存队列的尾部插入元素，接收操作则是从队列的头部删除元素
+
+如果内部缓存队列是满的，新的发送操作将阻塞直到有另一个goroutine执行接收操作而释放了新的队列空间
+
+当缓存队列既不是空也不是满的状态时，对该channel执行的发送或者接收操作都不会发送阻塞。通过这个方法，channel的缓存队列解耦了接收和发送的goroutine
+
+通过`cap`函数，可以获取到channel内部缓存的容量；通过`len`函数，可获取到channel内部缓存的有效元素个数
+
+### 8.5并发的循环
+
+这里直接贴上并发的循环示例代码，有兴趣的同学自行前往[并发的循环 · Go语言圣经 (studygolang.com)](https://books.studygolang.com/gopl-zh/ch8/ch8-05.html)阅读
+
+```go
+// makeThumbnails6 makes thumbnails for each file received from the channel.
+// It returns the number of bytes occupied by the files it creates.
+func makeThumbnails6(filenames <-chan string) int64 {
+    sizes := make(chan int64)
+    var wg sync.WaitGroup // number of working goroutines
+    for f := range filenames {
+        wg.Add(1)
+        // worker
+        go func(f string) {
+            defer wg.Done()
+            thumb, err := thumbnail.ImageFile(f)
+            if err != nil {
+                log.Println(err)
+                return
+            }
+            info, _ := os.Stat(thumb) // OK to ignore error
+            sizes <- info.Size()
+        }(f)
+    }
+
+    // closer
+    go func() {
+        wg.Wait()
+        close(sizes)
+    }()
+
+    var total int64
+    for size := range sizes {
+        total += size
+    }
+    return total
+}
+```
+
+### 8.7基于select的多路复用
+
+使用多路复用的`select`语句，能够解决在一个goroutine中接收多个channel中的信息，且不会因为第一个channel中没有事件发送导致的阻塞
+
+```go
+select {
+case <- ch1:
+	// ...
+case <- ch2:
+	// ...
+default:
+	/// ...
+}
+```
+
++ `select`语句与`switch`语句类似
++ 每个case表示一个通信操作
++ 当多个case同时满足时，select会随机选择一个执行
+
+> channel的**nil**作用：对于一个nil的channel发送和接收操作会被永远阻塞，在`select`语句中操作nil的channel永远不会被select到
+>
+> 这样，我们可以使用nil来激活或者禁用一个**case**
+
+### 8.9并发的退出
+
+采用广播机制：用关闭一个channel来进行广播
+
+```go
+var done = make(chan struct{})
+
+func cancelled() bool {
+	select {
+	case <- done:
+		return true
+	default:
+		return false
+	}
+}
+
+func closeChannel() {
+    go func() {
+        os.Stdin.Read(make([]byte, 1))
+        close(done)
+    }
+}
+```
+
+## 基于共享变量的并发
+
+### 9.1竞争条件
+
+**竞争条件**指的是程序在多个goroutine交叉执行操作时，没有给出正确的结果
+
+一个常见的竞争条件案例是银行账户程序
+
+### 9.2 sync.Mutex 互斥锁
+
+go语言直接提供`sync.Mutex`类型支持互斥锁，
+
++ `Lock()`：获得token（锁）
++ `Unlock()`：释放token
+
+```go
+import "sync"
+
+var (
+	mu sync.Mutex
+	balance int
+)
+
+func Deposit(amount int) {
+    mu.Lock()
+    defer mu.Unlock()
+    balance = balance + amount
+}
+
+func Balance() int {
+    mu.Lock()
+    b := balance
+    mu.Unlock()
+    return b
+}
+```
+
+> Go的mutex不能**重入**
+
+### 9.3 sync.RWMutex读写锁
+
+一种特殊类型的锁，其允许多个只读操作并行执行，但写操作会完全互斥。这种锁叫作“多读单写”锁（multiple readers, single writer lock）
+
+Go语言提供的这样的锁是sync.RWMutex：
+
++ `RLock()`和`RUnlock()`获取和释放一个读取或者共享锁
++ `Lock()`和`Unlock()`获取或释放一个写或者互斥锁
+
+`RLock`只能在临界区共享变量没有任何写入操作时可用
+
+### 9.4内存同步
+
+### 9.5 sync.Once惰性初始化
+
+Go语言中提供了`sync.Once`为我们提供了一个专门的方案来解决这种一次性初始化的问题
+
+概念上：一次性的初始化需要一个互斥量mutex和一个Boolean变量来记录初始是不是完成
+
++ `Do`这个唯一的方法需要接收初始化函数作为其参数
+
+```go
+var once sync.Once
+
+func loading(){
+    // do something
+}
+
+func A() {
+    once.Do(loading)
+}
+```
+
+每一次对Do(loadIcons)的调用都会锁定mutex，并会检查boolean变量（译注：Go1.9中会先判断boolean变量是否为1(true)，只有不为1才锁定mutex，不再需要每次都锁定mutex）。
+
+用这种方式来使用sync.Once的话，我们能够避免在变量被构建完成之前和其它goroutine共享该变量。
+
+### 9.7Goroutines和线程
+
+[Goroutines和线程 · Go语言圣经 (studygolang.com)](https://books.studygolang.com/gopl-zh/ch9/ch9-08.html)
