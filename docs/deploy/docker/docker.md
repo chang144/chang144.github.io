@@ -1,16 +1,12 @@
-# 基本概念
-
----
+# 了解docker
 
 + 镜像(`Image`)
 + 容器(`Container`)
 + 仓库(`Repository`)
 
-# 使用镜像
+## 使用镜像
 
----
-
-## 1.获取镜像
+### 1.获取镜像
 
 从Docker镜像仓库获取镜像的命令是 `docker pull`
 
@@ -29,7 +25,7 @@ $ docker pull ubuntu:18.04
 
 上面命令没有给出Docker镜像仓库地址，默认从`Docker Hub`获取镜像。而镜像名称是`ubuntun:18.04`,因此会获取官方镜像 `library/ubuntun`仓库中标签为`18.04`的镜像
 
-## 2.运行
+### 2.运行
 
 有了镜像后，我们就能够以这个镜像为基础启动并运行一个容器。以上面的`ubuntu:18.04`为例，如果我们打算启动`ubuntu>>bash`并且进行交互式操作的话，可以执行下面命令
 
@@ -48,9 +44,8 @@ $ docker run -it -rm \
 
 通过 `exit` 退出了这个容器。
 
-# 列出镜像
+## 列出镜像
 
----
 
 使用`docker image ls`命令，可以列出已经下载下来的镜像
 
@@ -65,13 +60,13 @@ docker.io/library/ubuntu  18.04       e28a50f651f9  3 weeks ago  65.5 MB
 
 **镜像 ID** 则是镜像的唯一标识，一个镜像可以对应多个 **标签**。
 
-## 1.镜像体积
+### 1.镜像体积
 
 `docker image ls` 列表中的镜像体积总和并非是所有镜像实际硬盘消耗。由于 Docker 镜像是多层存储结构，并且可以继承、复用，因此不同镜像可能会因为使用相同的基础镜像，从而拥有共同的层。由于 `Docker` 使用 `Union FS`，相同的层只需要保存一份即可，因此实际镜像硬盘占用空间很可能要比这个列表镜像大小的总和要小的多。
 
 可以使用 `docker system df`命令来查看镜像、容器、数据卷所占用的空间
 
-## 2.虚悬镜像
+### 2.虚悬镜像
 
 一个特殊的镜像，这个镜像既没有仓库名，也没有标签，均为 `<none>`。：
 
@@ -93,7 +88,7 @@ REPOSITORY          TAG                 IMAGE ID            CREATED             
 $ docker image prune
 ```
 
-## 3.中间层镜像
+### 3.中间层镜像
 
 为了加速镜像构建、重复利用资源，Docker会利用**中间层镜像**。使用在使用一段时间过后，可能会看到一些依赖的中间层镜像。默认的 `docker image ls`列表中只会显示顶层镜像，如果希望**显示**包括**中间层镜像所在内的所有镜像**的话，需要加`-a`参数
 
@@ -101,7 +96,7 @@ $ docker image prune
 $ docker image ls -a
 ```
 
-## 4.列出部分镜像
+### 4.列出部分镜像
 
 不加任何参数的情况下，`docker image ls` 会列出所有顶层镜像，但是有时候我们只希望列出部分镜像。`docker image ls` 有好几个参数可以帮助做到这个事情。
 
@@ -140,7 +135,7 @@ $ docker image ls -f label=com.example.version=0.1
 ...
 ```
 
-## 5.以特定格式显示
+### 5.以特定格式显示
 
 [docker]: https://www.topgoer.cn/docs/docker/imagelist
 

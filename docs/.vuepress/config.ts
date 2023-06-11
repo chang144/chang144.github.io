@@ -99,7 +99,11 @@ export default defineUserConfig({
                         },
                         {
                             text: '计算机网络 - http篇',
-                            children: [],
+                            children: [
+                                '/basic/network/02-http/01-http常见面试题.md',
+                                '/basic/network/02-http/02-HTTP1.1如何优化.md',
+                                '/basic/network/02-http/websocket.md',
+                            ],
                             link: '/basic/network/02-http'
                         },
                         {

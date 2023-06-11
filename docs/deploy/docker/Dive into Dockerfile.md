@@ -1,4 +1,4 @@
-learn from 
+> learn from 
 
 + [一篇文章带你吃透 Dockerfile - 掘金 (juejin.cn)](https://juejin.cn/post/7179042892395053113)
 
@@ -6,10 +6,9 @@ learn from
 + [全网最详细的Docker-Compose详细教程 - 掘金 (juejin.cn)](https://juejin.cn/post/7042663735156015140)
 + [docker compose 配置文件 .yml 全面指南 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/387840381)
 + [compose-spec/spec.md at master · compose-spec/compose-spec · GitHub](https://github.com/compose-spec/compose-spec/blob/master/spec.md)
+# 深入Docker
 
 ## 前言
-
----
 
 学习Dockers前期，通过Docker的官方镜像仓库拉取里面的镜像，根据这些镜像创建出容器并运行
 
@@ -43,10 +42,7 @@ learn from
 卷：提供了将容器的特定文件系统路径链路到主机的能力。如果在主机上的某个文件被挂载，那么当容器中该文件路径下的文件发送更改时，我们在主机上同样也可以看到更改。同样的，启动另一个挂载了同一个文件目录的容器，它也可以访问到相同的文件
 
 
-
 ## 镜像构建原理
-
----
 
 ### 1.Docker架构模式
 
@@ -55,8 +51,6 @@ learn from
 `docker`使用了**client**/**server**的架构模式。构建镜像时，用户在**dockers** **client**输入构建命令。**docker**引擎以 `REST API`的形式，像 **docker** **daemon**发送构建请求，如何dockers daemon就根据构建请求的内容，开始镜像构建的工作，并向Client持续放回构建过程的信息。
 
 ### 2.镜像分层模型
-
----
 
 **docker**镜像是用于创建容器的只读模板，是通过 **Dockerfile**中定义的指令构建而成的，构建结束后，会在原有的镜像层上生成一个新的镜像层，如下所示
 
@@ -68,7 +62,6 @@ learn from
 
 ### 3.基础镜像与父级镜像
 
----
 
 用于构建基础镜像的 **Dockerfile** 不指定父级镜像，Docker约定使用如下形式基础镜像
 
@@ -83,8 +76,6 @@ FROM scratch
 ![img](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ba55ae94bfb144cfa68b43aa7e19372e~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
 
 ### 4.构建上下文 / build context
-
----
 
 **Client** 向 **Docker** **daemon** 发送的构架请求包含两部分，第一部分是 **Dockerfile**文件，第二部分是**构建上下文**
 
@@ -157,8 +148,6 @@ EOF
 
 ### 5.构建缓存
 
----
-
 迭代过程中，Dockerfile对于的资源会被经常修改，因此需要频繁重新构建镜像，Docker为了提高构建速度，设计了多种优化方案，其中最重要的是**构建缓存**
 
 示例：说明构建缓存是如何工作的，Dockerfile如下
@@ -198,7 +187,6 @@ Docker Client 执行构建命令后，会经过以下步骤构建出最终镜像
 
 ## .dockerignore 
 
----
 
 这个文件需要遵循一定的语法规则
 
@@ -222,8 +210,6 @@ demo?
 
 ## Dockerfile 
 
----
-
 **Dockerfile**时一个用于描述Docekr镜像构建过程的文本文件，包含多条构建指令，以及相关的描述 
 
 Dockerfile的构建指令需要遵循如下的语法
@@ -237,7 +223,7 @@ INSTRUCTION arguments
 
 构建指令分两个部分，第一部分是指令，第二部分是指令参数。
 
-#### 1.解析器指令 / parse directive
+### 1.解析器指令 / parse directive
 
 解析器指令是以 `#`开始，用来提示解释器对 Dockerfile进行特殊处理，构建过程中它不会增加镜像层，也不会出现在构建过程
 
@@ -278,7 +264,7 @@ Docker 目前支持两种解析器指令
 # escape=`
 ```
 
-#### 2.常见指令解析
+### 2.常见指令解析
 
 | 序号 | 指令名     | 功能描述                                                     |
 | ---- | ---------- | ------------------------------------------------------------ |
@@ -495,7 +481,7 @@ ENTRYPOINT command param1 param2
 4. 指定 ENTRYPOINT 后，CMD 的内容将作为默认参数传给 ENTRYPOINT 指令，形如  
 5. 如果 CMD 是在基础镜像中定义的，当前镜像定义的 ENTRYPOINT 会将 CMD 的值重置为空值，这种情况下，需要重新定义 CMD
 
-# Docker-Compose
+## Docker-Compose
 
 docker-compose通过一个声明式的配置文件描述整个应用，从而使用一条命令即可完成部署
 
@@ -531,9 +517,9 @@ Docker compose的YAML文件包含有4个一级key:`version`,`services`,`networks
 + `networks`:用于指引Docker创建新的网络。默认情况下，Docker Compose会创建bridge网络，这个是一个单主机网络，只能实现同一主机上容器的连接。可以使用driver属性指定不同的网络类型
 + `volumes`用于指引Docker来创建新的卷
 
-## **docker-compose.yml**的具体配置：
+### **docker-compose.yml**的具体配置：
 
-## 1.build
+### 1.build
 
 指定构建镜像的dockerfile的上下文路径，或者详细配置文件
 
@@ -566,7 +552,7 @@ services:
 - **shm_size** 设置`/dev/shm`此构建容器的分区大小
 - **target** 多阶段构建，可以指定构建哪一层
 
-## 2.network
+### 2.network
 
 ...累了，下次再写
 
