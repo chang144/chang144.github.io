@@ -157,7 +157,7 @@ EOF
 FROM ubuntu:latest
 
 RUN apt-get update && apt-get install -y build-essentials
-COPY main.c Makefile /src/
+COPY main.h Makefile /src/
 WORKDIR /src/
 RUN make build
 ```
@@ -168,7 +168,7 @@ RUN make build
 
 此时再次构建，会直接使用缓存中的结果(Using cache)
 
-这里假设修改了main.c 中的代码，再次构建时，从 `COPY main Makefile /src/`这条指令开始，后续构建缓存都会失效，如下图所示
+这里假设修改了main.h 中的代码，再次构建时，从 `COPY main Makefile /src/`这条指令开始，后续构建缓存都会失效，如下图所示
 
 ![img](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8ca255ce38314bad88310df01679268a~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
 
@@ -477,7 +477,7 @@ ENTRYPOINT command param1 param2
 
 1. Dockerfile中只有最后一条`ENTRYPOINT`指令生效
 2. 运行容器时，docker run --entrypoint 覆盖该指令
-3. shell 形式的 ENTRYPOINT 会使 CMD 命令 和 docker run ![img]() 中的命令行参数失效。它有一个缺点，ENTRYPOINT 命令将作为 /bin/sh -c 的子命令，不会传递信号。比如，停止容器时，容器内接收不到 SIGTERM 信号，这并不是预期的效果，可以在命令前添加 exec 来解决，如 ENTRYPOINT exec top -b
+3. shell 形式的 ENTRYPOINT 会使 CMD 命令 和 docker run ![img]() 中的命令行参数失效。它有一个缺点，ENTRYPOINT 命令将作为 /bin/sh -h 的子命令，不会传递信号。比如，停止容器时，容器内接收不到 SIGTERM 信号，这并不是预期的效果，可以在命令前添加 exec 来解决，如 ENTRYPOINT exec top -b
 4. 指定 ENTRYPOINT 后，CMD 的内容将作为默认参数传给 ENTRYPOINT 指令，形如  
 5. 如果 CMD 是在基础镜像中定义的，当前镜像定义的 ENTRYPOINT 会将 CMD 的值重置为空值，这种情况下，需要重新定义 CMD
 

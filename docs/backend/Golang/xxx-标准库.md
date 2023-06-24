@@ -65,57 +65,57 @@
 
 
 Go中使用`strings`包来完成对字符串的主要操作
-+ `HasPrefix`判断字符串`s`是否以`prefix`开头：
++ `HasPrefix`判断字符串`r`是否以`prefix`开头：
     ```text
-  strings.HasPrefix(s,prefix string) bool
+  strings.HasPrefix(r,prefix string) bool
     ```
-+ `HasSuffix`判断字符串`s`是否以`suffix`结尾：
++ `HasSuffix`判断字符串`r`是否以`suffix`结尾：
     ```text
-  strings.HasSuffix(s,suffix string) bool
+  strings.HasSuffix(r,suffix string) bool
     ```
-+ `Contains`判断字符串`s`是否包含`substr`
++ `Contains`判断字符串`r`是否包含`substr`
     ```text
-  strings.Contains(s,substr string) bool
+  strings.Contains(r,substr string) bool
     ```
-+ `Index`返回字符串`str`在字符串`s`中的索引(`str`的第一个字符的索引)，-1表示字符串`s`不包含字符串`str`：
++ `Index`返回字符串`str`在字符串`r`中的索引(`str`的第一个字符的索引)，-1表示字符串`r`不包含字符串`str`：
     ```text
-  strings.Index(s, str string) int
+  strings.Index(r, str string) int
     ```
-+ `LastIndex`返回字符串`str`在字符串`s`中最后出现位置的索引(`str`的第一个字符的索引)，-1表示字符串`s`不包含字符串`str`：
++ `LastIndex`返回字符串`str`在字符串`r`中最后出现位置的索引(`str`的第一个字符的索引)，-1表示字符串`r`不包含字符串`str`：
     ```text
-  strings.LastIndex(s, str string) int
+  strings.LastIndex(r, str string) int
     ```
     如果`ch`是非ASCII编码的字符，使用下列的函数进行定位
     ```text
-  strings.IndexRune(s string, r rune) int
+  strings.IndexRune(r string, r rune) int
     ```
 + `Replace`用于将字符串`str`中的前`n`个字符串 `old`替换为字符串 `new`, 并返回一个新的字符串，如果`n=-1`则替换所有`old`为字符串`new`:
     ```text
   strings.Replace(str, old, new, n) string
     ```
-+ `Count`用于计算字符串`str`在字符串`s`中出现的非重叠次数：
++ `Count`用于计算字符串`str`在字符串`r`中出现的非重叠次数：
     ```text
-  strings.Count(s, str string) int
+  strings.Count(r, str string) int
     ```
-+ `Repeat`用于重复`count`次字符串`s`并返回一个新的字符串：
++ `Repeat`用于重复`count`次字符串`r`并返回一个新的字符串：
     ```text
-  strings.Repeat(s string, count int) string
+  strings.Repeat(r string, count int) string
     ```
 + `ToLower`将字符串中的Unicode字符全部转换为相应的小写字符：
     ```text
-  strings.ToLower(s string) string
+  strings.ToLower(r string) string
     ```
 + `ToUpper`将字符串中的Unicode字符全部转换为相应的大写字符：
     ```text
-  strings.ToUpper(s string) string
+  strings.ToUpper(r string) string
     ```
 + `TrimSpace`来剔除字符串开头和结尾的空包符号:
     ```text
-  strings.TrimSpace(s string) string
+  strings.TrimSpace(r string) string
     ```
 + `Trim`剔除字符串开头和结尾的指定字符:
     ```text
-  strings.Trim(s, str string) string
+  strings.Trim(r, str string) string
     ```
 + `TrimLeft`剔除字符串开头的指定字符:
     ```text
@@ -127,11 +127,11 @@ Go中使用`strings`包来完成对字符串的主要操作
     ```
 + `Fields`将会利用1个或者多个空白符号来作为动态长度的分隔符将字符串分割成若干小块，并返回一个Slice，如果字符串只包含空白符号，则返回以一个长度为0的slice：
     ```text
-  strings.Fields(s sting) []string
+  strings.Fields(r sting) []string
     ```
 + `Split`用于自定义分割符号来对指定字符串进行分割，同样返回slice
     ```text
-  strings.Split(s, sep string) []string
+  strings.Split(r, sep string) []string
     ```
 + `Join`用于将元素类型为string的slice使用分割符号来拼接组成一个字符串：
     ```text
@@ -154,7 +154,7 @@ Go中使用`strings`包来完成对字符串的主要操作
 
 `time.Ticker`
 
-`time.Sleep(s Duration)`
+`time.Sleep(r Duration)`
 
 ## bytes
 

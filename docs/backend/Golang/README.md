@@ -79,6 +79,71 @@ type Slice struct {
 
 
 
+### 4.3Map
+
+在Go语言中，一个map就是一个哈希表的引用。
+
+使用内置的`make`函数创建一个map
+
+```go
+m := make(map[string]int)
+```
+
+#### 4.3.1 sync.Map
+
+`sync.Map` 是Go语言标准库中一个并发安全的Map实现，可以在并发情况下安全地读写，而不用加锁
+
+官方文档对使用`sync.Map`的建议：
+
++ 多个goroutine的并发使用是安全的，不需要额外的锁定或协调扩控制
++ 大多数代码应该使用原生的map，而不是单独的锁定或协调控制，以获得更好的类型安全性和维护性
+
+结构体定义
+
+```go
+type Map struct {
+    mu 		sync.Mutex
+    read 	atomic.Value //readOnly
+    dirty 	map[interface{}]interface{}
+    misses 	int
+    dirtyLocked uintptr
+}
+```
+
+可以看出`sync.map`的实现依赖于一个互斥锁`sync.Mutex`和两个map——`read`和`dirty`
+
+`read`的定义如下：
+
+```go
+type readOnly struct {
+    m		map[interface{}]interface{} // map类型
+    amended bool // amended表示read中键值对是否被修改
+}
+```
+
+`dirty`的定义：
+
+```go
+type dirty struct {
+    m	    map[interface{}]interface{} // 存储被修改过的键值对
+    dirty	map[interface{}]bool	    // 存储了那些键值对被修改过
+	misses  int
+}
+```
+
++ 读取的实现`Load()`：直接在`readOnly`中的m查找，如果`readOnly`中的键值被修改过，则需要从`dirty`中查找
++ 写入的实现`Store()`：分两步实现，首先判断`readOnly`中的键值对是否被修改，如果没有被修改过，则直接将键值对添加到`readOnly`的`m`中，否则，获取互斥锁，将键值对添加到`dirty`中的`m`中，并将对应的键添加到`dirty`中的`dirty`中
++ 删除的实现`Delete()`：分两步实现，首先判断`readOnly`中的键值对是否被修改，如果没有被修改过，直接从`readOnly`中的`m`中删除键值对即可，否则，获取互斥锁，如何将键添加到`dirty`中的`dirty`中，并将`dirty`中的对应件的值设置为false
++ 遍历的实现`range()`：需要将`readOnly`和`dirty`中的所有键值对进行合并，并返回所有未被删除的键值对
+
+`sync.Map`建议使用场景：在读和删较多的场景上表现很好，但是在写入场景上的性能很差
+
+> 推荐阅读：
+>
+> [并发编程如此轻松：一篇文章深入探究 Go 语言中的 sync.Map！ - 掘金 (juejin.cn)](https://juejin.cn/post/7226604941727596581)
+>
+> [Go 并发读写 sync.map 的强大之处 - 掘金 (juejin.cn)](https://juejin.cn/post/7011355673069879304)
+
 ## 函数
 
 ### 5.8Deffered函数
@@ -86,6 +151,13 @@ type Slice struct {
 只要在调用的普通函数或方法前加上关键字`defer`，就完成了defer所需的语法
 
 `defer`语句经常被用于处理成对的操作，如打开、关闭、连接、断开连接、加锁、释放锁
+
+#### defer底层原理
+1. 每次`defer`语句执行时，会对函数进行**压栈**，函数参数会被拷贝下来，当外层函数退出时，defer的函数按定义的顺序逆序执行。当defer的函数为`nil`时，会产生panic
+2. `defer`函数定义时，对外部变量的引用有两种方式： 分别是**函数参数**以及**闭包引用**
+   + 作函数参数时，在`defer`定义时，会被缓存起来
+   + 作闭包引用时，则在`defer`真正调用时，根据上下文确定当前的值
+3. `defer`后面的语句在执行的时候，函数调用的参数会被保存起来，即（复制一份
 
 ### 5.9Panic异常
 
@@ -100,7 +172,7 @@ Go的类型系统会在编译时捕获很多错误，但有些错误只能在运
 在defer函数中调用了内置函数**recover**，并且定义该defer语句的函数发生了panic异常，recover会使程序从panic中恢复，并返回panic value
 
 ```go
-func Parse(input string) (s *Syntax, err error) {
+func Parse(input string) (r *Syntax, err error) {
     defer func() {
         if p := recover(); p != nil {
             err = fmt.Errorf("internal error: %v", p)
@@ -109,8 +181,6 @@ func Parse(input string) (s *Syntax, err error) {
     // ...parser...
 }
 ```
-
-
 
 ## Goroutine和Channels
 
